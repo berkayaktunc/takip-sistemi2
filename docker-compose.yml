@@ -19,14 +19,23 @@ services:
   #      until pg_isready -h localhost -U postgres; do echo waiting for db; sleep 2; done;
   #      psql -U postgres -c 'CREATE DATABASE IF NOT EXISTS attendance_db;'"
 
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - mynetwork
+
   web:
     build: .
     command: >
-      bash -c "python manage.py migrate &&
-      python manage.py createsuperuser --noinput --username admin --email admin@example.com &&
+      bash -c "python manage.py makemigrations &&
+      python manage.py migrate &&
       python manage.py runserver 0.0.0.0:8000"
     volumes:
       - .:/app
+      - ./cert.pem:/app/cert.pem
+      - ./key.pem:/app/key.pem
     ports:
       - "8000:8000"
     depends_on:

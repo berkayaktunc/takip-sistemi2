@@ -43,7 +43,84 @@
       </div>
     </footer>
 
+    <!-- Toast bildirimlerinin gösterileceği alan -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <script>
+      // WebSocket bağlantısı için kullanıcı ID'sini almak
+      const userId = {{ request.user.id }};
+      const ws = new WebSocket('wss://' + window.location.host + '/ws/notifications/');
+
+      // WebSocket açıldığında
+      ws.onopen = function() {
+        console.log('WebSocket bağlantısı kuruldu');
+      };
+
+      // WebSocket'ten gelen mesajları al
+      ws.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        showToast(data.message);  // Gelen mesajı toast olarak göster
+      };
+
+      // WebSocket kapandığında
+      ws.onclose = function() {
+        console.log('WebSocket bağlantısı kapandı');
+      };
+
+      // Toast bildirimini göstermek için kullanılan fonksiyon
+      function showToast(message) {
+        const toast = document.createElement("div");
+        toast.classList.add("toast");
+        toast.innerText = message;
+
+        // Toast'u ekrana ekle
+        document.getElementById("toast-container").appendChild(toast);
+
+        // 3 saniye sonra toast kaybolacak
+        setTimeout(function() {
+          toast.remove();
+        }, 3000);
+      }
+    </script>
+
     <style>
+      /* Toast Bildirimi Stilleri */
+      .toast-container {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 1050;
+      }
+
+      .toast {
+        background-color: #007bff;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-size: 16px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        opacity: 1;
+        margin-bottom: 10px;
+        animation: toastAnim 3s forwards;
+      }
+
+      /* Toast animasyonu */
+      @keyframes toastAnim {
+        0% {
+          opacity: 0;
+          transform: translateX(-50%) translateY(20px);
+        }
+        50% {
+          opacity: 1;
+          transform: translateX(-50%) translateY(0);
+        }
+        100% {
+          opacity: 0;
+          transform: translateX(-50%) translateY(20px);
+        }
+      }
+
       /* Reset CSS */
       * {
         margin: 0;
@@ -178,5 +255,8 @@
         margin-top: 1rem;
       }
     </style>
+    {% block scripts %}
+    <!-- Sayfaya özel JS kodları burada olacaksa burada eklenebilir -->
+    {% endblock %}
   </body>
 </html>

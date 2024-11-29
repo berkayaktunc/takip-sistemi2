@@ -3,6 +3,8 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login as auth_login
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 from db.models import LeaveRequest
 from django.contrib import messages
 from django.http import HttpResponseForbidden
@@ -150,4 +152,35 @@ def update_status(request, request_id, new_status):
         if new_status in ['approved', 'rejected', 'pending']:
             leave_request.status = new_status
             leave_request.save()  # Değişiklikleri kaydet
+    return redirect('core:izin_talepleri')  # Yeniden izin talepleri sayfasına dön
+
+@login_required
+def update_status2(request, request_id, new_status):
+    # LeaveRequest modelinden ilgili izni al
+    leave_request = get_object_or_404(LeaveRequest, id=request_id)
+    
+    # Yalnızca adminlerin durumu değiştirmesine izin ver
+    if request.user.is_staff:
+        # Durumun yeni değeri geçerli seçeneklerden biri olmalı
+        if new_status in ['approved', 'rejected', 'pending']:
+            leave_request.status = new_status
+            leave_request.save()  # Değişiklikleri kaydet
+            
+            # Kullanıcıya bildirim göndereceğiz
+            user = leave_request.user  # İzin talebini yapan kullanıcı
+            notification_message = f"İzin talebiniz {new_status} olarak güncellendi."
+
+            # Channel Layer üzerinden bildirim göndereceğiz
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                f"user_{user.id}_notifications",  # Kullanıcıya özel grup
+                {
+                    'type': 'send_notification',  # Consumer'a iletilecek tip
+                    'message': notification_message
+                }
+            )
+            
+            # Admin'e mesaj
+            messages.success(request, f"Talep durumu {new_status} olarak güncellendi.")
+    
     return redirect('core:izin_talepleri')  # Yeniden izin talepleri sayfasına dön

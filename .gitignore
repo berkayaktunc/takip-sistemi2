@@ -34,3 +34,5 @@ ehthumbs.db
 # Secret keys
 *.env
 *.local
+cert.pem
+key.pem
