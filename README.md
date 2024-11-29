@@ -97,3 +97,11 @@ docker-compose up --build
 ```
 
 Bu komut, uygulamanızı Docker container'ları içinde çalıştırır.
+
+## Swagger API Belgelendirmesi
+
+Projenin API'lerini test etmek için Swagger UI entegrasyonu yapılmıştır. Aşağıdaki adımlarla Swagger UI'ye erişebilirsiniz:
+
+### Swagger UI'ye Erişim
+
+Swagger UI'ye şu [URL](http://localhost:8000/swagger/) üzerinden erişebilirsiniz:
