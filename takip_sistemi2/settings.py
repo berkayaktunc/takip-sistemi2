@@ -47,6 +47,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'db.apps.DbConfig',
     'django_extensions',
+    'rest_framework',
+    'drf_yasg',
     'channels',
     'core',
 ]

@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
+from .views import LeaveRequestList
 from django.urls import path
 from . import views
 
@@ -16,4 +17,5 @@ urlpatterns = [
     path('izin-talepleri/', views.izin_talepleri, name='izin_talepleri'),
     path('create-leave-request/', views.create_leave_request, name='create_leave_request'),
     path('izin-talepleri/durum-guncelle/<int:request_id>/<str:new_status>/', views.update_status, name='update_status'),
+    path('api/leave-requests/', LeaveRequestList.as_view(), name='leave_request_list'),
 ]

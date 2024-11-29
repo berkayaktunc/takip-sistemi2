@@ -9,6 +9,10 @@ from db.models import LeaveRequest
 from django.contrib import messages
 from django.http import HttpResponseForbidden
 from .forms import SignupForm, LeaveRequestForm
+from .serializers import LeaveRequestSerializer
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
 
 def logout_view(request):
     logout(request)
@@ -184,3 +188,19 @@ def update_status2(request, request_id, new_status):
             messages.success(request, f"Talep durumu {new_status} olarak güncellendi.")
     
     return redirect('core:izin_talepleri')  # Yeniden izin talepleri sayfasına dön
+
+class LeaveRequestList(APIView):
+    """
+    İzin taleplerini listelemek ve oluşturmak için API view
+    """
+    def get(self, request):
+        leave_requests = LeaveRequest.objects.all()
+        serializer = LeaveRequestSerializer(leave_requests, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = LeaveRequestSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(user=request.user)  # Oturum açan kullanıcıyı ekliyoruz
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
