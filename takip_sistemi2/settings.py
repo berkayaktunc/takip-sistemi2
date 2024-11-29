@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'db.apps.DbConfig',
+    'channels',
     'core',
 ]
 
@@ -89,7 +90,7 @@ DATABASES = {
         'NAME': 'attendance_db',
         'USER': 'postgres',
         'PASSWORD': 'postgres',
-        'HOST': 'localhost',
+        'HOST': 'db', # 'HOST': 'localhost', 
         'PORT': '5432',
     }
 }
@@ -136,3 +137,19 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# Channels
+
+# WebSocket bağlantıları için gerekli ayarlar
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',  # Redis'i kanal katmanı olarak kullanıyoruz
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],  # Redis host ve port ayarı
+        },
+    },
+}
+
+# ASGI uygulaması için gerekli yapılandırma
+ASGI_APPLICATION = 'takip_sistemi2.asgi.application'

@@ -1,0 +1,42 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: attendance_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - mynetwork
+    # Gerekirse veritabanı oluşturma komutu..
+  #    command: >
+  #      bash -c "docker-entrypoint.sh postgres &
+  #      until pg_isready -h localhost -U postgres; do echo waiting for db; sleep 2; done;
+  #      psql -U postgres -c 'CREATE DATABASE IF NOT EXISTS attendance_db;'"
+
+  web:
+    build: .
+    command: >
+      bash -c "python manage.py migrate &&
+      python manage.py createsuperuser --noinput --username admin --email admin@example.com &&
+      python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    networks:
+      - mynetwork
+
+volumes:
+  postgres_data:
+
+networks:
+  mynetwork:
+    driver: bridge
