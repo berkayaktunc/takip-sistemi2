@@ -1,0 +1,123 @@
+{% extends 'core/base.html' %} {% block content %}
+<h2>İzin Talebi Oluştur</h2>
+
+<div class="form-container">
+  <form method="post">
+    {% csrf_token %}
+    <!-- Başlangıç Tarihi -->
+    <div class="form-group">
+      <label for="id_start_date">Başlangıç Tarihi</label>
+      {{ form.start_date }}
+    </div>
+
+    <!-- Bitiş Tarihi -->
+    <div class="form-group">
+      <label for="id_end_date">Bitiş Tarihi</label>
+      {{ form.end_date }}
+    </div>
+
+    <!-- Durum (status) -->
+    <input type="hidden" name="status" value="pending" />
+
+    <button type="submit" class="btn btn-primary">İzin Talebi Gönder</button>
+  </form>
+</div>
+
+<!-- Flatpickr Takvimi için gerekli JavaScript -->
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    flatpickr("#id_start_date", {
+      minDate: "today", // Bugünden önceki tarihleri seçilemez yapar
+      dateFormat: "Y-m-d", // Tarih formatını belirle
+      onChange: function (selectedDates, dateStr, instance) {
+        let endDateInput = document.querySelector("#id_end_date");
+        endDateInput.disabled = false;
+        endDateInput.min = dateStr;
+        flatpickr("#id_end_date", {
+          minDate: dateStr, // Bitiş tarihi başlangıç tarihinden önce olamaz
+          dateFormat: "Y-m-d",
+        });
+      },
+    });
+
+    flatpickr("#id_end_date", {
+      minDate: "today",
+      dateFormat: "Y-m-d",
+    });
+  });
+</script>
+
+<!-- Custom Styles for the form -->
+<style>
+  .form-container {
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: #333;
+  }
+
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .form-group label {
+    font-weight: bold;
+    color: #555;
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+  }
+
+  .form-group textarea {
+    height: 120px;
+    resize: vertical;
+  }
+
+  .btn-primary {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: #007bff;
+    border-color: #007bff;
+    color: white;
+    font-size: 1.1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  .btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+  }
+
+  /* Optional: Add some space below the submit button */
+  .form-container button {
+    margin-top: 1rem;
+  }
+
+  /* Style for error messages (if any) */
+  .errorlist {
+    color: #e74c3c;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+  }
+</style>
+
+{% endblock %}

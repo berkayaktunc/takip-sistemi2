@@ -1,0 +1,10 @@
+{% extends 'core/base.html' %} {% block content %}
+<h1>Admin Paneli</h1>
+<p>Yetkili işlemlerini buradan yönetebilirsiniz.</p>
+
+<!-- İzin Talepleri Sayfasına Gitmek İçin Buton -->
+<a href="{% url 'core:izin_talepleri' %}" class="btn btn-primary"
+  >İzin Taleplerini Görüntüle</a
+>
+
+{% endblock %}

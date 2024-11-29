@@ -1,0 +1,20 @@
+{% extends 'core/base.html' %} {% block content %}
+<h1>Merhaba, {{ user.username }}!</h1>
+<p>Giriş yaptınız.</p>
+
+{% if user.is_staff %}
+<p>
+  Yetkili paneline erişim için
+  <a href="{% url 'core:admin_dashboard' %}">buraya</a> tıklayın.
+</p>
+
+{% else %}
+<p>İzin taleplerinizi yönetmek için ilgili sayfaya geçebilirsiniz.</p>
+
+<p>
+  İzin talebinizi oluşturmak için
+  <a href="{% url 'core:create_leave_request' %}" class="btn btn-primary">
+    İzin Talebi Oluştur
+  </a>
+</p>
+{% endif %} {% endblock %}
